@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  VIEWER
+  ANALYST
+  ADMIN
+}
+
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  name String
+  role Role @default(VIEWER)
+  password String 
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  financialRecords FinancialRecord[]
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+
+model FinancialRecord {
+  id String @id @default(uuid())
+  amount Float
+  type TransactionType
+  category String
+  date DateTime
+  notes String?
+
+  createdBy User @relation(fields: [createdById], references: [id])
+  createdById String
+
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+}
